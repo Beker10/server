@@ -1,12 +1,3 @@
-import express from 'express'
+import { initServer } from './configs/app.js';
 
-const app = express()
-
-app.get('/', (req, res) => {
-  res.status(202).json({
-    msg: 'hola mundo'
-  })
-  console.log("dentro de el get")
-})
-
-app.listen(3000)
+initServer();
