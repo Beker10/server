@@ -65,11 +65,25 @@ export const initServer = async () => {
         app.use(deleteFileOnError)
         app.use(handleErrors)
         await conectarDB()
-        app.listen(process.env.PORT, () => {
-            console.log(`Server running on port ${process.env.PORT}`)
-        })
+        
+        // Only listen if not in Vercel
+        if (process.env.VERCEL !== '1') {
+            app.listen(process.env.PORT, () => {
+                console.log(`Server running on port ${process.env.PORT}`)
+            })
+        }
     } catch (error) {
         console.log(`Error al iniciar el servidor: ${error}`);
 
     }
 }
+
+// Export app for Vercel
+export const app = express();
+middlewares(app);
+routes(app);
+app.use(deleteFileOnError);
+app.use(handleErrors);
+await conectarDB();
+
+export default app;

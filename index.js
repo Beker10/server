@@ -1,3 +1,9 @@
-import { initServer } from './configs/app.js';
+import { initServer, app } from './configs/app.js';
 
-initServer();
+// For local development
+if (process.env.VERCEL !== '1') {
+    initServer();
+}
+
+// Export for Vercel
+export default app;
