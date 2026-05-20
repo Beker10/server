@@ -63,19 +63,10 @@ routes(app);
 app.use(deleteFileOnError);
 app.use(handleErrors);
 
-// Connect DB middleware for all environments
-app.use(async (req, res, next) => {
-    try {
-        await conectarDB();
-        next();
-    } catch (error) {
-        console.log(`Error connecting DB: ${error.message}`);
-        next(error);
-    }
-});
-
 export const initServer = async () => {
     try {
+        await conectarDB()
+        
         // Only listen if not in Vercel
         if (process.env.VERCEL !== '1') {
             app.listen(process.env.PORT, () => {
