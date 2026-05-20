@@ -1,5 +1,5 @@
 import dns from 'dns';
-import { initServer, app } from './configs/app.js';
+import { initServer, createApp } from './configs/app.js';
 
 // Set Cloudflare and Google DNS as resolver (for local only)
 if (process.env.VERCEL !== '1') {
@@ -7,5 +7,5 @@ if (process.env.VERCEL !== '1') {
     initServer();
 }
 
-// Export for Vercel
-export default app;
+// Export for Vercel - call the function to get the app
+export default createApp();

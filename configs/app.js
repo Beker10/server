@@ -56,15 +56,23 @@ const conectarDB = async () => {
     }
 }
 
-const app = express();
+// Lazy initialization for Vercel serverless
+let app;
 
-middlewares(app);
-routes(app);
-app.use(deleteFileOnError);
-app.use(handleErrors);
+const createApp = () => {
+    if (!app) {
+        app = express();
+        middlewares(app);
+        routes(app);
+        app.use(deleteFileOnError);
+        app.use(handleErrors);
+    }
+    return app;
+};
 
 export const initServer = async () => {
     try {
+        const app = createApp();
         await conectarDB()
         
         // Only listen if not in Vercel
@@ -79,4 +87,4 @@ export const initServer = async () => {
     }
 }
 
-export default app;
+export default createApp;
