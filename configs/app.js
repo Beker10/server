@@ -5,7 +5,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { dbConnection } from './db.js';
-import 'dotenv/config';
 import authRoutes from '../src/auth/auth.routes.js';
 import postRoutes from '../src/posts/post.routes.js';
 import commentRoutes from '../src/comments/comment.routes.js';

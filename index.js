@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { initServer, app } from './configs/app.js';
 
 // For local development
