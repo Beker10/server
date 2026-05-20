@@ -79,4 +79,17 @@ export const initServer = async () => {
     }
 }
 
+// For Vercel serverless, connect DB on each request
+if (process.env.VERCEL === '1') {
+    app.use(async (req, res, next) => {
+        try {
+            await conectarDB();
+            next();
+        } catch (error) {
+            console.log(`Error connecting DB: ${error.message}`);
+            next(error);
+        }
+    });
+}
+
 export default app;
