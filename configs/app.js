@@ -56,14 +56,15 @@ const conectarDB = async () => {
     }
 }
 
-export const initServer = async () => {
-    const app = express();
+const app = express();
 
+middlewares(app);
+routes(app);
+app.use(deleteFileOnError);
+app.use(handleErrors);
+
+export const initServer = async () => {
     try {
-        middlewares(app)
-        routes(app)
-        app.use(deleteFileOnError)
-        app.use(handleErrors)
         await conectarDB()
         
         // Only listen if not in Vercel
@@ -77,13 +78,5 @@ export const initServer = async () => {
 
     }
 }
-
-// Export app for Vercel
-export const app = express();
-middlewares(app);
-routes(app);
-app.use(deleteFileOnError);
-app.use(handleErrors);
-await conectarDB();
 
 export default app;
