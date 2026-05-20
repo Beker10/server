@@ -1,9 +1,7 @@
-import dns from 'dns';
 import { initServer, createApp } from './configs/app.js';
 
-// Set Cloudflare and Google DNS as resolver (for local only)
+// For local development
 if (process.env.VERCEL !== '1') {
-    dns.setServers(['1.1.1.1', '8.8.8.8']);
     initServer();
 }
 
