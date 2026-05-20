@@ -17,7 +17,7 @@ import notificationRoutes from '../src/notifications/notification.routes.js';
 import tournamentRoutes from '../src/tournaments/tournament.routes.js';
 import { deleteFileOnError } from '../middlewares/delete-file-on-error.js';
 
-const app = express();
+export const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }))

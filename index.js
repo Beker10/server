@@ -8,3 +8,4 @@ if (process.env.VERCEL !== '1') {
 
 // Export for Vercel
 export default app;
+// force restart nodemon
