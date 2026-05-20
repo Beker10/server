@@ -6,60 +6,50 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { dbConnection } from './db.js';
 import 'dotenv/config';
+import authRoutes from '../src/auth/auth.routes.js';
+import postRoutes from '../src/posts/post.routes.js';
+import commentRoutes from '../src/comments/comment.routes.js';
+import { handleErrors } from '../middlewares/handle-errors.js';
+import teamRoutes from '../src/teams/team.routes.js';
+import matchRoutes from '../src/matches/match.routes.js';
+import userRoutes from '../src/users/user.routes.js';
+import historyRoutes from '../src/history/history.routes.js';
+import notificationRoutes from '../src/notifications/notification.routes.js';
+import tournamentRoutes from '../src/tournaments/tournament.routes.js';
+import { deleteFileOnError } from '../middlewares/delete-file-on-error.js';
 
-const middlewares = (app) => {
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: false }))
-    app.use(cors({
-        origin: '*',
-        credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization']
-    }));
-    app.use(helmet({
-        crossOriginResourcePolicy: { policy: "cross-origin" },
-        crossOriginEmbedderPolicy: false
-    }));
-    app.use(morgan('dev'));
-}
+const app = express();
 
-const conectarDB = async () => {
-    try {
-        await dbConnection();
-    } catch (error) {
-        console.log(`Error al conectar la db: ${error.message}`)
-    }
-}
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }))
+app.use(cors({
+    origin: '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginEmbedderPolicy: false
+}));
+app.use(morgan('dev'));
 
-// Lazy initialization for Vercel serverless
-let app;
+app.use('/api/auth', authRoutes)
+app.use('/api/posts', postRoutes)
+app.use('/api/comments', commentRoutes);
+app.use('/api/teams', teamRoutes);
+app.use('/api/matches', matchRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/history', historyRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/tournaments', tournamentRoutes)
 
-const createApp = () => {
-    if (!app) {
-        app = express();
-        middlewares(app);
-        
-        // Import routes lazily
-        import('../src/auth/auth.routes.js').then(module => app.use('/api/auth', module.default));
-        import('../src/posts/post.routes.js').then(module => app.use('/api/posts', module.default));
-        import('../src/comments/comment.routes.js').then(module => app.use('/api/comments', module.default));
-        import('../src/teams/team.routes.js').then(module => app.use('/api/teams', module.default));
-        import('../src/matches/match.routes.js').then(module => app.use('/api/matches', module.default));
-        import('../src/users/user.routes.js').then(module => app.use('/api/users', module.default));
-        import('../src/history/history.routes.js').then(module => app.use('/api/history', module.default));
-        import('../src/notifications/notification.routes.js').then(module => app.use('/api/notifications', module.default));
-        import('../src/tournaments/tournament.routes.js').then(module => app.use('/api/tournaments', module.default));
-        
-        import('../middlewares/delete-file-on-error.js').then(module => app.use(module.default));
-        import('../middlewares/handle-errors.js').then(module => app.use(module.default));
-    }
-    return app;
-};
+app.use(deleteFileOnError);
+app.use(handleErrors);
 
 export const initServer = async () => {
     try {
-        const app = createApp();
-        await conectarDB()
+        await dbConnection();
         
         // Only listen if not in Vercel
         if (process.env.VERCEL !== '1') {
@@ -69,8 +59,7 @@ export const initServer = async () => {
         }
     } catch (error) {
         console.log(`Error al iniciar el servidor: ${error}`);
-
     }
 }
 
-export default createApp;
+export default app;
