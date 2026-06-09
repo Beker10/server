@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { check } from 'express-validator';
 import { validateJWT } from '../../middlewares/jwt-verify.js';
 import { validarCampos } from '../../middlewares/validate-values.js';
-import { createTeam, updateTeam, getMyTeams, addMember, changeRole, deleteTeam, getTeamMembers, removeMember, getTeams, advanceTeams, getAdvancedStats, getPlayerCard, toggleAward, playerPhotoUpload } from './team.controller.js';
+import { createTeam, updateTeam, getMyTeams, addMember, changeRole, deleteTeam, getTeamMembers, removeMember, getTeams, advanceTeams, getAdvancedStats, getPlayerCard, toggleAward, playerPhotoUpload, addPlayer } from './team.controller.js';
 import { isAdminOfTeam } from '../../middlewares/team-validator.js';
 import { isAdmin } from '../../middlewares/role-validator.js';
 import { uploadTeamLogo, uploadPlayerPhoto } from '../../middlewares/file-uploader.js';
@@ -37,6 +37,15 @@ router.post('/player-photo', [
 
 // Awards (Admin or Global Admin)
 router.post('/player/award', [validateJWT, isAdmin], toggleAward);
+
+// Add a single player to a team
+router.post('/:teamId/players', [
+    validateJWT,
+    authtenticatedLimiter,
+    isAdminOfTeam,
+    check('name', 'El nombre del jugador es obligatorio').not().isEmpty(),
+    validarCampos
+], addPlayer);
 
 // Only Global Admins can advance tournament stages
 router.post('/advance', [

@@ -1,7 +1,7 @@
 import rateLimit from "express-rate-limit";
 
-const windowMs = 15 *60 * 1000;
-const max = 5;
+const windowMs = 5 * 60 * 1000;
+const max = 10000; // Desactivado prácticamente para pruebas
 
 export const publicLimiter = rateLimit({
     windowMs,
@@ -22,8 +22,8 @@ export const authtenticatedLimiter = rateLimit({
 
 export const apiLimiter = rateLimit({
     windowMs,
-    max: 150,
-    message: `Has superado el límite de lecturas. Intenta en 15 minutos.`,
+    max: 10000,
+    message: `Has superado el límite de lecturas. Intenta en 5 minutos.`,
     standarHeaders: true,
     legacyHeaders: false,
 });

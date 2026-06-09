@@ -504,3 +504,50 @@ export const playerPhotoUpload = async (req, res) => {
         });
     }
 };
+
+// Add a single player to a team
+export const addPlayer = async (req, res) => {
+    try {
+        const { teamId } = req.params;
+        const { name, position, number, goals, assists, mvpCount, photo } = req.body;
+
+        // Check if team exists
+        const team = await Team.findById(teamId);
+        if (!team) {
+            return res.status(404).json({ success: false, msg: 'Equipo no encontrado' });
+        }
+
+        // Check if player with same name already exists in team
+        const existingPlayer = team.players.find(p => p.name === name);
+        if (existingPlayer) {
+            return res.status(400).json({ success: false, msg: 'El jugador ya existe en este equipo' });
+        }
+
+        // Add new player
+        const newPlayer = {
+            name,
+            position: position || 'Sin posición',
+            number: number || 0,
+            goals: goals || 0,
+            assists: assists || 0,
+            mvpCount: mvpCount || 0,
+            photo: photo || ''
+        };
+
+        team.players.push(newPlayer);
+        await team.save();
+
+        res.status(201).json({
+            success: true,
+            msg: 'Jugador agregado exitosamente',
+            player: newPlayer
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            msg: 'Error al agregar jugador',
+            error: error.message
+        });
+    }
+};
