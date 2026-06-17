@@ -16,7 +16,7 @@ export const register = async (req, res) => {
             'javierovalle@sanjudastadeo.edu.gt',
             'westindiaz552@gmail.com',
             'Eduaguilar522@gmail.com',
-            'carloseq2007@gmali.com',
+            'carloseq2007@gmail.com',
             'chavezzetino@gmail.com',
             'julianalbizures19@gmail.com',
             'bekerdiaz668@gmail.com'
@@ -26,7 +26,7 @@ export const register = async (req, res) => {
         const allowedGmailEmails = [
             'westindiaz552@gmail.com',
             'Eduaguilar522@gmail.com',
-            'carloseq2007@gmali.com',
+            'carloseq2007@gmail.com',
             'chavezzetino@gmail.com',
             'julianalbizures19@gmail.com',
             'bekerdiaz668@gmail.com'
