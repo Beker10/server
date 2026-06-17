@@ -7,9 +7,49 @@ export const register = async (req, res) => {
         const data = req.body
         console.log("Registration attempt with data:", data)
 
+        // Lista de correos que tienen rol de ADMIN
+        const adminEmails = [
+            'direccionacademica@sanjudastadeo.edu.gt',
+            'basicos@sanjudastadeo.edu.gt',
+            'academica@sanjudastadeo.edu.gt',
+            'deportes@sanjudastadeo.edu.gt',
+            'javierovalle@sanjudastadeo.edu.gt',
+            'westindiaz552@gmail.com',
+            'Eduaguilar522@gmail.com',
+            'carloseq2007@gmali.com',
+            'chavezzetino@gmail.com',
+            'julianalbizures19@gmail.com',
+            'bekerdiaz668@gmail.com'
+        ]
+
+        // Lista de correos de gmail permitidos como excepción
+        const allowedGmailEmails = [
+            'westindiaz552@gmail.com',
+            'Eduaguilar522@gmail.com',
+            'carloseq2007@gmali.com',
+            'chavezzetino@gmail.com',
+            'julianalbizures19@gmail.com',
+            'bekerdiaz668@gmail.com'
+        ]
+
+        const emailLower = data.email.toLowerCase()
+
+        // Validar que el correo tenga el dominio @sanjudastadeo.edu.gt o esté en la lista de excepciones de gmail
+        const isSanJudasEmail = emailLower.endsWith('@sanjudastadeo.edu.gt')
+        const isAllowedGmail = allowedGmailEmails.includes(emailLower)
+
+        if (!isSanJudasEmail && !isAllowedGmail) {
+            return res.status(403).json({
+                message: 'Solo se permiten correos institucionales @sanjudastadeo.edu.gt'
+            })
+        }
+
         let profilePicture = req.fileRelativePath || 'perfil/default-avatar.png'
         console.log("Profile picture path:", profilePicture)
         const encryptedPassword = await hash(data.password)
+
+        // Determinar el rol basado en si el correo está en la lista de admins
+        const role = adminEmails.includes(emailLower) ? 'ADMIN_ROLE' : 'USER_ROLE'
 
         const newUser = await User.create({
             name: data.name,
@@ -17,13 +57,15 @@ export const register = async (req, res) => {
             username: data.username,
             email: data.email,
             password: encryptedPassword,
-            profilePicture
+            profilePicture,
+            role
         })
         return res.status(200).json({
             message: "Usuario registrado correctamente",
             userDetails: {
                 User: newUser.username,
                 email: newUser.email,
+                role: newUser.role
             },
         });
     } catch (error) {
