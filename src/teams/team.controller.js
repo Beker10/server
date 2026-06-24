@@ -20,6 +20,15 @@ export const createTeam = async (req, res) => {
             console.error("Error parsing JSON fields:", e);
         }
 
+        // Check if user is already a member of any team (as admin or member)
+        const existingMembership = await TeamMembership.findOne({ user: userId });
+        if (existingMembership) {
+            return res.status(400).json({
+                success: false,
+                msg: 'Ya eres miembro de un equipo. Solo puedes pertenecer a un equipo a la vez. Debes salir o ser eliminado de tu equipo actual antes de crear uno nuevo.'
+            });
+        }
+
         // 1. Create the Team
         const newTeam = new Team({
             name,
@@ -186,10 +195,19 @@ export const addMember = async (req, res) => {
             return res.status(404).json({ success: false, msg: 'Usuario no encontrado' });
         }
 
-        // Check if already a member
+        // Check if already a member of THIS team
         const existingMember = await TeamMembership.findOne({ team: teamId, user: userId });
         if (existingMember) {
             return res.status(400).json({ success: false, msg: 'El usuario ya pertenece al equipo' });
+        }
+
+        // Check if user is already a member of ANY other team
+        const existingMembership = await TeamMembership.findOne({ user: userId });
+        if (existingMembership) {
+            return res.status(400).json({
+                success: false,
+                msg: 'El usuario ya pertenece a otro equipo. Debe salir o ser eliminado de su equipo actual antes de unirse a uno nuevo.'
+            });
         }
 
         const newMember = new TeamMembership({
