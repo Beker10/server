@@ -21,7 +21,10 @@ export const createTeam = async (req, res) => {
         }
 
         // Check if user is already a member of any team (as admin or member)
+        console.log('Verificando membresía para usuario:', userId);
         const existingMembership = await TeamMembership.findOne({ user: userId });
+        console.log('Membresía existente encontrada:', existingMembership);
+
         if (existingMembership) {
             return res.status(400).json({
                 success: false,
