@@ -154,6 +154,7 @@ export const getMyTeams = async (req, res) => {
         const memberships = await TeamMembership.find({ user: userId })
             .populate({
                 path: 'team',
+                select: 'name logo pts jj pg pe pp dg gf gc secondaryAdmins description tournament currentStage',
                 populate: { path: 'secondaryAdmins', select: 'username' }
             });
 
@@ -376,8 +377,27 @@ export const removeMember = async (req, res) => {
 // GET ALL TEAMS (For public standings)
 export const getTeams = async (req, res) => {
     try {
-        const teams = await Team.find().sort({ pts: -1, dg: -1, gf: -1 });
-        res.status(200).json(teams);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const skip = (page - 1) * limit;
+
+        const teams = await Team.find()
+            .select('name logo pts jj pg pe pp dg gf gc secondaryAdmins description tournament currentStage')
+            .sort({ pts: -1, dg: -1, gf: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const total = await Team.countDocuments();
+
+        res.status(200).json({
+            teams,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit)
+            }
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
