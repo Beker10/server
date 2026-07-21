@@ -20,6 +20,76 @@ export const createTeam = async (req, res) => {
             console.error("Error parsing JSON fields:", e);
         }
 
+        // Validación: Campos obligatorios
+        if (!name || name.trim() === '') {
+            return res.status(400).json({
+                success: false,
+                msg: 'El nombre del equipo es obligatorio y no puede estar vacío'
+            });
+        }
+
+        // Validación: Longitud del nombre
+        if (name.trim().length < 3) {
+            return res.status(400).json({
+                success: false,
+                msg: 'El nombre del equipo debe tener al menos 3 caracteres'
+            });
+        }
+
+        if (name.trim().length > 50) {
+            return res.status(400).json({
+                success: false,
+                msg: 'El nombre del equipo no puede exceder los 50 caracteres'
+            });
+        }
+
+        // Validación: Caracteres especiales permitidos (letras, números, espacios, guiones, guiones bajos)
+        const nameRegex = /^[a-zA-Z0-9\s\-_áéíóúÁÉÍÓÚñÑüÜ]+$/;
+        if (!nameRegex.test(name.trim())) {
+            return res.status(400).json({
+                success: false,
+                msg: 'El nombre del equipo contiene caracteres no permitidos. Solo se permiten letras, números, espacios, guiones y guiones bajos'
+            });
+        }
+
+        // Validación: Descripción opcional pero con límite
+        if (description && description.trim().length > 200) {
+            return res.status(400).json({
+                success: false,
+                msg: 'La descripción no puede exceder los 200 caracteres'
+            });
+        }
+
+        // Validación: Verificar equipos duplicados (case-insensitive)
+        const existingTeam = await Team.findOne({ 
+            name: { $regex: new RegExp(`^${name.trim()}$`, 'i') }
+        });
+        
+        if (existingTeam) {
+            return res.status(400).json({
+                success: false,
+                msg: 'Ya existe un equipo con ese nombre. Por favor, elige un nombre diferente'
+            });
+        }
+
+        // Validación: Jugadores deben tener foto obligatoria
+        if (parsedPlayers && parsedPlayers.length > 0) {
+            for (const player of parsedPlayers) {
+                if (!player.name || player.name.trim() === '') {
+                    return res.status(400).json({
+                        success: false,
+                        msg: 'Todos los jugadores deben tener un nombre'
+                    });
+                }
+                if (!player.photo || player.photo.trim() === '') {
+                    return res.status(400).json({
+                        success: false,
+                        msg: `El jugador "${player.name}" debe tener una foto obligatoria`
+                    });
+                }
+            }
+        }
+
         // Check if user is already a member of any team (as admin or member)
         console.log('Verificando membresía para usuario:', userId);
         const existingMembership = await TeamMembership.findOne({ user: userId });
@@ -34,8 +104,8 @@ export const createTeam = async (req, res) => {
 
         // 1. Create the Team
         const newTeam = new Team({
-            name,
-            description,
+            name: name.trim(),
+            description: description ? description.trim() : '',
             logo: logo || '',
             secondaryAdmins: parsedSecondaryAdmins || [],
             players: parsedPlayers || [],
@@ -53,7 +123,7 @@ export const createTeam = async (req, res) => {
 
         res.status(201).json({
             success: true,
-            msg: 'Equipo creado exitosamente',
+            msg: '¡Equipo creado exitosamente! 🎉 Tu equipo ha sido registrado en el sistema y ya está listo para participar.',
             team: newTeam
         });
 
@@ -61,16 +131,18 @@ export const createTeam = async (req, res) => {
         console.error("Error creating team:", error);
         
         if (error.name === 'ValidationError') {
+            // Extraer mensajes de validación específicos
+            const errorMessages = Object.values(error.errors).map(err => err.message);
             return res.status(400).json({
                 success: false,
-                msg: 'Error de validación: Asegúrate de que todos los campos obligatorios (incluyendo fotos de jugadores) estén presentes.',
+                msg: 'Error de validación: ' + errorMessages.join(', '),
                 errors: error.message
             });
         }
 
         res.status(500).json({
             success: false,
-            msg: 'Error al crear el equipo',
+            msg: 'Error al crear el equipo. Por favor, intenta nuevamente más tarde.',
             error: error.message
         });
     }
