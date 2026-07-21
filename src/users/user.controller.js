@@ -210,3 +210,34 @@ export const changePasswordDirect = async (req, res) => {
         });
     }
 }
+
+export const updateThemePreference = async (req, res) => {
+    try {
+        const { uid } = req;
+        const { themePreference } = req.body;
+
+        if (!['light', 'dark'].includes(themePreference)) {
+            return res.status(400).json({ message: "Preferencia de tema inválida" });
+        }
+
+        const user = await User.findByIdAndUpdate(
+            uid,
+            { themePreference },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        return res.status(200).json({
+            message: "Preferencia de tema actualizada",
+            themePreference: user.themePreference
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: 'Error al actualizar la preferencia de tema',
+            error: error.message
+        });
+    }
+}

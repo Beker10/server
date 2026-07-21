@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { updateProfile, updateEmail, sendVerificationCode, changePasswordWithCode, searchUsers, verifyCurrentPassword, changePasswordDirect } from './user.controller.js';
+import { updateProfile, updateEmail, sendVerificationCode, changePasswordWithCode, searchUsers, verifyCurrentPassword, changePasswordDirect, updateThemePreference } from './user.controller.js';
 import { validateJWT } from '../../middlewares/jwt-verify.js';
 import { authtenticatedLimiter } from '../../middlewares/request-limit.js';
 import { uploadProfilePicture } from '../../middlewares/file-uploader.js';
@@ -17,5 +17,6 @@ router.post('/request-password-code', authtenticatedLimiter, sendVerificationCod
 router.put('/change-password', authtenticatedLimiter, changePasswordWithCode);
 router.post('/verify-password', authtenticatedLimiter, verifyCurrentPassword);
 router.put('/update-password-direct', authtenticatedLimiter, changePasswordDirect);
+router.put('/theme-preference', updateThemePreference);
 
 export default router;

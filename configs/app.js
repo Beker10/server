@@ -15,6 +15,9 @@ import userRoutes from '../src/users/user.routes.js';
 import historyRoutes from '../src/history/history.routes.js';
 import notificationRoutes from '../src/notifications/notification.routes.js';
 import tournamentRoutes from '../src/tournaments/tournament.routes.js';
+import ruleRoutes from '../src/rules/rule.routes.js';
+import systemRoutes from '../src/system/system.routes.js';
+import galleryRoutes from '../src/gallery/gallery.routes.js';
 import { deleteFileOnError } from '../middlewares/delete-file-on-error.js';
 
 export const app = express();
@@ -42,6 +45,9 @@ app.use('/api/users', userRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/tournaments', tournamentRoutes)
+app.use('/api/rules', ruleRoutes)
+app.use('/api/system', systemRoutes)
+app.use('/api/gallery', galleryRoutes)
 
 app.use(deleteFileOnError);
 app.use(handleErrors);

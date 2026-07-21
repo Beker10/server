@@ -49,6 +49,13 @@ const matchSchema = new Schema({
         type: { type: String, enum: ['Yellow', 'Red'], required: true },
         minute: { type: Number, required: true }
     }],
+    scorers: [{
+        player: { type: String, required: true },
+        team: { type: String, required: true },
+        minute: { type: Number, required: true },
+        isOwnGoal: { type: Boolean, default: false },
+        isPenalty: { type: Boolean, default: false }
+    }],
     mvp: {
         type: String,
         default: null

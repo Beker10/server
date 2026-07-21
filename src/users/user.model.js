@@ -66,7 +66,12 @@ const userSchema = new Schema({
     type: String,
     enum: ['La Cabra', 'El Muro', 'El Francotirador', 'El Más Peligroso'],
     default: []
-  }]
+  }],
+  themePreference: {
+    type: String,
+    enum: ['light', 'dark'],
+    default: 'light'
+  }
 }, {
   timestamps: true,
   versionKey: false

@@ -31,4 +31,5 @@ const createMulterConfig = (storage) => {
 
 export const uploadProfilePicture = createMulterConfig(createCloudinaryStorage("perfil"));
 export const uploadTeamLogo = createMulterConfig(createCloudinaryStorage("equipo"));
-export const uploadPlayerPhoto = createMulterConfig(createCloudinaryStorage("foto_jugador"));
+export const uploadPlayerPhoto = createMulterConfig(createCloudinaryStorage("foto_jugador"));
+export const uploadGalleryImage = createMulterConfig(createCloudinaryStorage("galeria"));
